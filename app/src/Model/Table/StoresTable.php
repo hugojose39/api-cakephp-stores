@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Model\Table;
 
+use App\Model\Entity\Store;
 use Cake\Event\EventInterface;
-use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
@@ -72,6 +72,12 @@ class StoresTable extends Table
         return $validator;
     }
 
+    /**
+     * Build rules method.
+     *
+     * @param \Cake\ORM\RulesChecker $rules Rules object.
+     * @return \Cake\ORM\RulesChecker
+     */
     public function buildRules(RulesChecker $rules): RulesChecker
     {
         $rules->add($rules->isUnique(['name'], 'Nome em uso.'));
@@ -79,25 +85,41 @@ class StoresTable extends Table
         return $rules;
     }
 
-    public function beforeSave(EventInterface $event, $entity, $options): bool
+    /**
+     * Before save method.
+     *
+     * @param \Cake\Event\EventInterface $event Event object.
+     * @param \Cake\Datasource\EntityInterface $entity Entity object.
+     * @param mixed $options Options array.
+     * @return bool
+     */
+    public function beforeSave(EventInterface $event, Store $entity, mixed $options): bool
     {
-        if ($entity->isNew()) {
-            return true;
-        }
-/*
-        // Verifica se um novo endereço está sendo criado
-        if ($entity->has('Addresses')) {
-            // Verifica se há um endereço existente vinculado à mesma loja
-            if ($this->Addresses->exists(['store_id' => $entity->id])) {
-                // Obtém o endereço existente vinculado à mesma loja
-                $existingAddress = $this->Addresses->find()
+        // Verifica se a entidade já existe no banco de dados
+        if (!$entity->isNew()) {
+            // Verifica se há dados de endereço na requisição
+            if ($entity->isDirty('addresses')) {
+                // Se o endereço foi alterado, primeiro exclua o endereço existente
+                $existingAddresses = $this->Addresses->find()
+                    ->find('all')
                     ->where(['store_id' => $entity->id])
-                    ->first();
+                    ->toArray();
 
-                // Exclui o endereço existente
-                $this->Addresses->delete($existingAddress);
+                foreach ($existingAddresses as $existingAddress) {
+                    if ($existingAddress) {
+                        $this->Addresses->delete($existingAddress);
+                    }
+
+                    continue;
+                }
+
+                // Agora, cria um novo endereço com os dados fornecidos
+                $address = $this->Addresses->newEntity($entity->addresses[0]->toArray());
+                // Associa o endereço à entidade da loja
+                $entity->Addresses = $address;
             }
         }
-        */
+
+        return true;
     }
 }

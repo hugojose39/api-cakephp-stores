@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Model\Table;
 
+use App\Model\Entity\Address;
+use Cake\Event\EventInterface;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
@@ -75,25 +77,21 @@ class AddressesTable extends Table
         $validator
             ->scalar('state')
             ->maxLength('state', 2, 'O estado deve ter no máximo 2 caracteres.')
-            // ->requirePresence('state', 'create', 'O estado é obrigatório.')
             ->notEmptyString('state', 'Por favor, preencha o estado.');
 
         $validator
             ->scalar('city')
             ->maxLength('city', 200, 'A cidade deve ter no máximo 200 caracteres.')
-            // ->requirePresence('city', 'create', 'A cidade é obrigatória.')
             ->notEmptyString('city', 'Por favor, preencha a cidade.');
 
         $validator
             ->scalar('sublocality')
             ->maxLength('sublocality', 200, 'O bairro deve ter no máximo 200 caracteres.')
-            // ->requirePresence('sublocality', 'create', 'O bairro é obrigatório.')
             ->notEmptyString('sublocality', 'Por favor, preencha o bairro.');
 
         $validator
             ->scalar('street')
             ->maxLength('street', 200, 'A rua deve ter no máximo 200 caracteres.')
-            // ->requirePresence('street', 'create', 'A rua é obrigatória.')
             ->notEmptyString('street', 'Por favor, preencha a rua.');
 
         $validator
@@ -127,7 +125,7 @@ class AddressesTable extends Table
         return $rules;
     }
 
-    public function beforeSave($event, $entity, $options)
+    public function beforeSave(EventInterface $event, Address $entity, mixed $options)
     {
         if ($entity->isDirty('postal_code')) {
             // Consulta à primeira API de CEP
@@ -160,7 +158,7 @@ class AddressesTable extends Table
     }
 
     // Método para consultar a primeira API de CEP
-    private function consultarCep(string $cep): bool
+    private function consultarCep(string $cep): array|bool
     {
         // Monta a URL para consulta do CEP no Republica Virtual
 
@@ -185,7 +183,7 @@ class AddressesTable extends Table
     }
 
     // Método para consultar a segunda API de CEP
-    private function consultarOutroCep($cep)
+    private function consultarOutroCep(string $cep): array|bool
     {
         // Monta a URL para consulta do CEP no Via Cep
 
@@ -207,7 +205,7 @@ class AddressesTable extends Table
     }
 
     // Método para preencher os dados do endereço com base nos dados do CEP
-    private function preencherDadosEndereco($entity, $cepData)
+    private function preencherDadosEndereco(Address $entity, array $cepData)
     {
         $entity->city = $cepData['cidade'] ?? $cepData['localidade'];
         $entity->state = $cepData['uf'];

@@ -66,16 +66,9 @@ class StoresController extends AppController
         $store = $this->Stores->newEmptyEntity();
         // Verifica se a requisição é do tipo POST
         if ($this->request->is('post')) {
-            // Preenche a entidade de loja com os dados da requisição, incluindo os dados do endereço associado
             $store = $this->Stores->patchEntity($store, $this->request->getData(), [
-                'associated' => ['Addresses'],
+                'associated' => ['Addresses'], // Especifica a associação com Addresses
             ]);
-
-            // Cria uma nova entidade de endereço com os dados fornecidos
-            $address = $this->Stores->Addresses->newEntity($this->request->getData('address') ?? []);
-
-            // Atribui o endereço à entidade da loja
-            $store->set('Addresses', $address);
 
             // Salva a loja
             if ($this->Stores->save($store)) {
@@ -84,6 +77,7 @@ class StoresController extends AppController
                     ->withType('application/json')
                     ->withStatus(201)
                     ->withStringBody(json_encode($store));
+
                 return $response;
             }
 
@@ -111,13 +105,9 @@ class StoresController extends AppController
         ]);
 
         if ($this->request->is(['patch', 'post', 'put'])) {
-            $store = $this->Stores->patchEntity($store, $this->request->getData());
-
-            // Cria uma nova entidade de endereço com os dados fornecidos
-            $address = $this->Stores->Addresses->newEntity($this->request->getData('address') ?? []);
-
-            // Atribui o endereço à entidade da loja
-            $store->set('Addresses', $address);
+            $store = $this->Stores->patchEntity($store, $this->request->getData(), [
+                'associated' => ['Addresses'], // Especifica a associação com Addresses
+            ]);
 
             // Salva os dados da loja
             if ($this->Stores->save($store)) {

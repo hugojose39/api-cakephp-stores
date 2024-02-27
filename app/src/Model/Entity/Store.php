@@ -28,8 +28,6 @@ class Store extends Entity
      */
     protected $_accessible = [
         'name' => true,
-        'created' => true,
-        'modified' => true,
         'addresses' => true,
         'addresses.*' => true,
     ];

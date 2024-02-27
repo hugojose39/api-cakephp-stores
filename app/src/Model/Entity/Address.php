@@ -34,16 +34,8 @@ class Address extends Entity
      * @var array<string, bool>
      */
     protected $_accessible = [
-        // 'store_id' => true,
         'postal_code' => true,
-        'state' => true,
-        'city' => true,
-        'sublocality' => true,
-        'street' => true,
         'street_number' => true,
         'complement' => true,
-        'created' => true,
-        'modified' => true,
-        'store' => true,
     ];
 }
