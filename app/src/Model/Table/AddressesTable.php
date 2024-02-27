@@ -173,7 +173,7 @@ class AddressesTable extends Table
             $cepData = json_decode($jsonResponse, true);
 
             // Verifica se os dados retornados contêm informações válidas
-            if (is_array($cepData) && !isset($cepData['erro'])) {
+            if (is_array($cepData) && !isset($cepData['debug'])) {
                 return $cepData; // Retorna os dados do CEP
             }
         }
