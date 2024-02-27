@@ -34,7 +34,7 @@ class Address extends Entity
      * @var array<string, bool>
      */
     protected $_accessible = [
-        'store_id' => true,
+        // 'store_id' => true,
         'postal_code' => true,
         'state' => true,
         'city' => true,

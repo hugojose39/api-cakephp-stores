@@ -75,25 +75,25 @@ class AddressesTable extends Table
         $validator
             ->scalar('state')
             ->maxLength('state', 2, 'O estado deve ter no máximo 2 caracteres.')
-            ->requirePresence('state', 'create', 'O estado é obrigatório.')
+            // ->requirePresence('state', 'create', 'O estado é obrigatório.')
             ->notEmptyString('state', 'Por favor, preencha o estado.');
 
         $validator
             ->scalar('city')
             ->maxLength('city', 200, 'A cidade deve ter no máximo 200 caracteres.')
-            ->requirePresence('city', 'create', 'A cidade é obrigatória.')
+            // ->requirePresence('city', 'create', 'A cidade é obrigatória.')
             ->notEmptyString('city', 'Por favor, preencha a cidade.');
 
         $validator
             ->scalar('sublocality')
             ->maxLength('sublocality', 200, 'O bairro deve ter no máximo 200 caracteres.')
-            ->requirePresence('sublocality', 'create', 'O bairro é obrigatório.')
+            // ->requirePresence('sublocality', 'create', 'O bairro é obrigatório.')
             ->notEmptyString('sublocality', 'Por favor, preencha o bairro.');
 
         $validator
             ->scalar('street')
             ->maxLength('street', 200, 'A rua deve ter no máximo 200 caracteres.')
-            ->requirePresence('street', 'create', 'A rua é obrigatória.')
+            // ->requirePresence('street', 'create', 'A rua é obrigatória.')
             ->notEmptyString('street', 'Por favor, preencha a rua.');
 
         $validator
@@ -130,17 +130,20 @@ class AddressesTable extends Table
     public function beforeSave($event, $entity, $options)
     {
         if ($entity->isDirty('postal_code')) {
-            // Implemente aqui a lógica de consulta à API de CEP
+            // Consulta à primeira API de CEP
             $cepData = $this->consultarCep($entity->postal_code);
 
             if (!$cepData) {
-                // Se os dados não forem encontrados na primeira API, consulte na segunda API
+                // Consulta à segunda API de CEP
                 $cepData = $this->consultarOutroCep($entity->postal_code);
             }
 
             if ($cepData) {
-                // Preencha os demais campos do endereço com os dados obtidos
+                // Preencher os dados do endereço com base nos dados do CEP
                 $entity = $this->preencherDadosEndereco($entity, $cepData);
+
+                // Aplicar a máscara de CEP ao campo postal_code e atribuir ao campo postal_code_masked
+                $entity->postal_code_masked = $this->aplicarMascaraCEP($entity->postal_code);
             } else {
                 // Se os dados não forem encontrados em nenhuma API, emita o erro
                 $entity->setError('postal_code', 'CEP não encontrado');
@@ -149,26 +152,68 @@ class AddressesTable extends Table
         }
     }
 
-    // Método para consultar a primeira API de CEP
-    private function consultarCep($cep)
+    private function aplicarMascaraCEP(string $cep): string
     {
-        // Implemente aqui a lógica para consultar a primeira API de CEP (por exemplo, CEP Lá)
+        $maskedCEP = substr($cep, 0, 5) . '-' . substr($cep, 5);
+
+        return $maskedCEP;
+    }
+
+    // Método para consultar a primeira API de CEP
+    private function consultarCep(string $cep): bool
+    {
+        // Monta a URL para consulta do CEP no Republica Virtual
+
+        $url = "http://cep.republicavirtual.com.br/web_cep.php?cep={$cep}&formato=json";
+
+        // Realiza a requisição HTTP para obter os dados do CEP
+        $jsonResponse = @file_get_contents($url);
+
+        // Verifica se a requisição foi bem-sucedida e se há dados retornados
+        if ($jsonResponse !== false) {
+            // Decodifica os dados JSON em um array associativo
+            $cepData = json_decode($jsonResponse, true);
+
+            // Verifica se os dados retornados contêm informações válidas
+            if (is_array($cepData) && !isset($cepData['erro'])) {
+                return $cepData; // Retorna os dados do CEP
+            }
+        }
+
+        // Retorna falso se a requisição falhou ou se os dados do CEP não forem válidos
+        return false;
     }
 
     // Método para consultar a segunda API de CEP
     private function consultarOutroCep($cep)
     {
-        // Implemente aqui a lógica para consultar a segunda API de CEP (por exemplo, Via CEP)
+        // Monta a URL para consulta do CEP no Via Cep
+
+        $url = "https://viacep.com.br/ws/{$cep}/json/";
+
+        // Realiza a requisição HTTP para obter os dados do CEP
+        $jsonResponse = @file_get_contents($url);
+        // Verifica se a requisição foi bem-sucedida e se há dados retornados
+        if ($jsonResponse !== false) {
+            // Decodifica os dados JSON em um array associativo
+            $cepData = json_decode($jsonResponse, true);
+            // Verifica se os dados retornados contêm informações válidas
+            if (is_array($cepData) && !isset($cepData['erro'])) {
+                return $cepData; // Retorna os dados do CEP
+            }
+        }
+        // Retorna falso se a requisição falhou ou se os dados do CEP não forem válidos
+        return false;
     }
 
     // Método para preencher os dados do endereço com base nos dados do CEP
     private function preencherDadosEndereco($entity, $cepData)
     {
-        // Implemente aqui a lógica para preencher os demais campos do endereço com base nos dados do CEP
-        // Por exemplo:
-        $entity->city = $cepData['city'];
-        $entity->state = $cepData['state'];
-        // ... e assim por diante
+        $entity->city = $cepData['cidade'] ?? $cepData['localidade'];
+        $entity->state = $cepData['uf'];
+        $entity->sublocality = $cepData['bairro'];
+        $entity->street = $cepData['logradouro'];
+        $entity->complement = $cepData['tipo_logradouro'] ?? $cepData['complemento'];
 
         return $entity;
     }

@@ -79,30 +79,25 @@ class StoresTable extends Table
         return $rules;
     }
 
-    public function beforeSave(EventInterface $event, $entity, $options)
+    public function beforeSave(EventInterface $event, $entity, $options): bool
     {
         if ($entity->isNew()) {
-            // Verifica se um novo endereço está sendo criado
-            if ($entity->has('address')) {
-                $address = $entity->get('address');
-                // Verifica se há um endereço existente vinculado à mesma loja
-                if ($entity->isNew() && $this->Addresses->exists(['store_id' => $entity->id])) {
-                    // Obtém o endereço existente vinculado à mesma loja
-                    $existingAddress = $this->Addresses->find()
-                        ->where(['store_id' => $entity->id])
-                        ->first();
+            return true;
+        }
+/*
+        // Verifica se um novo endereço está sendo criado
+        if ($entity->has('Addresses')) {
+            // Verifica se há um endereço existente vinculado à mesma loja
+            if ($this->Addresses->exists(['store_id' => $entity->id])) {
+                // Obtém o endereço existente vinculado à mesma loja
+                $existingAddress = $this->Addresses->find()
+                    ->where(['store_id' => $entity->id])
+                    ->first();
 
-                    // Exclui o endereço existente
-                    $this->Addresses->delete($existingAddress);
-                }
+                // Exclui o endereço existente
+                $this->Addresses->delete($existingAddress);
             }
         }
-    }
-
-    protected function _setAddress($addressData)
-    {
-        $address = $this->Addresses->newEmptyEntity();
-        $address = $this->Addresses->patchEntity($address, $addressData);
-        $this->set('address', $address);
+        */
     }
 }

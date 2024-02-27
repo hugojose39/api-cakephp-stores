@@ -64,17 +64,18 @@ class StoresController extends AppController
     {
         // Cria uma nova entidade de loja vazia
         $store = $this->Stores->newEmptyEntity();
-
         // Verifica se a requisição é do tipo POST
         if ($this->request->is('post')) {
             // Preenche a entidade de loja com os dados da requisição, incluindo os dados do endereço associado
-
             $store = $this->Stores->patchEntity($store, $this->request->getData(), [
                 'associated' => ['Addresses'],
             ]);
 
-            // Chame o método _setAddress para configurar o endereço
-            $store->_setAddress($this->request->getData('address'));
+            // Cria uma nova entidade de endereço com os dados fornecidos
+            $address = $this->Stores->Addresses->newEntity($this->request->getData('address') ?? []);
+
+            // Atribui o endereço à entidade da loja
+            $store->set('Addresses', $address);
 
             // Salva a loja
             if ($this->Stores->save($store)) {
@@ -83,13 +84,11 @@ class StoresController extends AppController
                     ->withType('application/json')
                     ->withStatus(201)
                     ->withStringBody(json_encode($store));
-
                 return $response;
             }
 
             // Em caso de erro, retorna uma resposta de erro
             $errors = $store->getErrors();
-
             return $this->response
                 ->withType('application/json')
                 ->withStatus(400)
@@ -114,24 +113,11 @@ class StoresController extends AppController
         if ($this->request->is(['patch', 'post', 'put'])) {
             $store = $this->Stores->patchEntity($store, $this->request->getData());
 
-            // Verifica se o endereço foi alterado
-            if (!empty($this->request->getData('address'))) {
-                $newAddress = $this->Stores->Addresses->newEmptyEntity();
-                $newAddressData = $this->request->getData('address');
-                $newAddress = $this->Stores->Addresses->patchEntity($newAddress, $newAddressData);
-                $newAddress->store_id = $store->id;
+            // Cria uma nova entidade de endereço com os dados fornecidos
+            $address = $this->Stores->Addresses->newEntity($this->request->getData('address') ?? []);
 
-                // Deleta o endereço existente
-                if ($store->address && isset($store->address->store_id)) {
-                    $this->Stores->Addresses->delete($store->address);
-                }
-
-                // Em caso de erro, retorna uma resposta de erro
-                return $this->response
-                    ->withType('application/json')
-                    ->withStatus(400)
-                    ->withStringBody(json_encode(['error' => 'Não foi possível atualizar a loja']));
-            }
+            // Atribui o endereço à entidade da loja
+            $store->set('Addresses', $address);
 
             // Salva os dados da loja
             if ($this->Stores->save($store)) {
@@ -146,10 +132,11 @@ class StoresController extends AppController
         }
 
         // Em caso de erro, retorna uma resposta de erro
+        $errors = $store->getErrors();
         return $this->response
             ->withType('application/json')
             ->withStatus(400)
-            ->withStringBody(json_encode(['error' => 'Não foi possível atualizar a loja']));
+            ->withStringBody(json_encode(['error' => $errors]));
     }
 
     /**

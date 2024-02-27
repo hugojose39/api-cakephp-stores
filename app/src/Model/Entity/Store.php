@@ -31,5 +31,6 @@ class Store extends Entity
         'created' => true,
         'modified' => true,
         'addresses' => true,
+        'addresses.*' => true,
     ];
 }
