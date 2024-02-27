@@ -1,50 +1,163 @@
-# Mundo Wap CakePHP Test Application for Juniors
+# Projeto MundoWap Teste
 
-## Installation and access
+Esta API fornece uma maneira de gerenciar lojas e seus endereços.
 
-To make this easier, all the commands necessary to install, run and access the application can be done through the `exec.sh` file in the project root, so if you intend to use it, you must ensure that it is executable typing the `chmod +x exec.sh` command.
+Baixe o código-fonte em um arquivo zip, ou, se você tiver o Git instalado, use o comando git clone. Escolha a opção que melhor se adapta às suas necessidades - **HTTPS, SSH, GitHub CLI**. Abaixo estão as configurações para o ambiente de desenvolvimento.
 
-Follow the steps bellow:
+## Tecnologias usadas
+ * PHP
+ * CakePHP
+ * MySQL
+ * Composer
+ * GIT
+ * Docker
+ * PHP unit
+  
+## Principais classes
+ * StoresController.php
+ * StoresTable.php
+ * Store.php
+ * StoresControllerTest.php
+ * AddressesTable.php
+ * Address.php
+ * routes.php
 
-1. Create the `.env.app` and the `.env.db` files according to the related `.env.*.example` files executing the below command:
+## Começando
+
+Para começar a utilizar a biblioteca em desenvolvimento, você precisa ter o seguinte configurado:
+
+- Docker: Certifique-se de que o Docker está instalado e disponível no seu sistema. Você pode verificar se o PHP está instalado executando o seguinte comando:
+``` bash
+$  docker --version
+```
+
+- PHP: Certifique-se de que o PHP está instalado e disponível no seu sistema. Você pode verificar se o PHP está instalado executando o seguinte comando:
+``` bash
+$  php --version
+```
+
+- Composer: Certifique-se de que o Composer está instalado e disponível no seu sistema. Você pode verificar se o Composer está instalado executando o seguinte comando:
+``` bash
+$  composer --version
+```
+
+## Clonando o projeto
+
+Escolha uma das opções abaixo ou baixe o projeto em formato zip:
+
+``` bash
+$    HTTPS - git clone https://github.com/hugojose39/omnipay-cielo-teste.git
+$    SSH - git clone git@github.com:hugojose39/omnipay-cielo-teste.git
+$    GitHub CLI - gh repo clone hugojose39/omnipay-cielo-teste
+```
+
+Quando o projeto estiver em seu computador, acesse sua pasta e execute os comandos no seu terminal:
+
+1. Crie os arquivos .env.app e .env.db de acordo com os arquivos .env.*.example relacionados.
+   
+2. Construa a imagem do Docker com o comando abaixo:
     ```bash
-    ./exec.sh build-env
+    docker-compose build --force-rm
     ```
-   or you can simply copy and rename the example files.
-2. Build the docker image and install the application dependencies with the below command:
+
+3. Para acessar a linha de comando da aplicação, execute o comando abaixo:
+    **O comando docker compose exec --user=root app bash permite acessar o contêiner do aplicativo Docker como usuário root.**
     ```bash
-    ./exec.sh install
+    docker compose exec --user=root app bash
     ```
-3. You may need to enter the application command line to execute migrations or install composer packages, to do this, execute the below command:
+
+4. Na linha de comando da aplicação, instale as dependências da aplicação com o comando abaixo:
     ```bash
-    ./exec.sh install app bash
+    composer install
     ```
-4. Once in the application command line, execute the below command to exit:
+
+5. Ainda na linha de comando da aplicação, execute o teste do StoresController com o comando abaixo:
+    ```bash
+    vendor/bin/phpunit tests/TestCase/Controller/StoresControllerTest.php
+    ```
+
+6. Para sair da linha de comando da aplicação, execute o comando abaixo:
     ```bash
     exit
     ```
-5. Execute the below command to start the application:
+
+7. Execute o comando abaixo para iniciar a aplicação:
     ```bash
-    ./exec.sh start
-    ```
-6. Execute the below command to stop the application:
-    ```bash
-    ./exec.sh stop
+    docker-compose up -d --remove-orphans
     ```
 
-After installed and started, the application should be accessible at `http://localhost:13001` and the database should be accessible at `http://localhost:3306`.
+8. Execute o comando abaixo para parar a aplicação:
+    ```bash
+    docker-compose down
+    ```
 
-## Important instructions
-Skills with containers and environment management are not the focus of this test, so in case of any issues creating, starting or executing the environment, please contact us.
+## Uso 
+A aplicação deve ser acessível em `http://localhost:13001`.
 
-The database structure should be created according to the `db_structure.sql` file.
+O banco de dados deve ser acessível em `http://localhost:3306`.
 
-Click [here](https://bit.ly/MWDevTestPHP) to see the test specifications, requirements and instructions.
+## Endpoints
 
-### Authentication
-If your implementation does not use CSRF authentication, you should remove the `Cake\Http\Middleware\CsrfProtectionMiddleware` at the `App\Application::middleware` method.
+### A API fornece os seguintes endpoints:
 
-### Configure XDebug (optional)
-Set the `XDEBUG_SESSION` key at the request cookies.
+POST /stores/create: Cria uma nova loja.
 
-At your IDE, point the `app` project directory to the `/var/www/html` absolute path on server.
+GET /stores/index: Lista todas as lojas. 
+
+GET /stores/show/{id}: Obtém uma loja específica. 
+
+PUT /stores/update/{id}: Atualiza uma loja específica. 
+
+DELETE /stores/delete/{id}: Exclui uma loja específica.
+
+## Exemplos:
+
+### Listar todas as lojas
+
+curl -X GET
+
+`http://localhost:13001/stores/index`
+
+### Criar uma nova loja
+
+curl -X POST
+
+- H "Content-Type: application/json"
+- d `{ "name": "Loja Teste", "addresses": [{"postal_code": "01001000", "street_number": "231"}]}`
+
+`http://localhost:13001/stores/create`
+
+### Listar uma loja específica
+
+curl -X GET
+
+`http://localhost:13001/stores/show/1`
+
+### Atualizar uma loja
+
+curl -X PUT
+
+- H "Content-Type: application/json"
+- d `{ "name": "Loja Teste2", "addresses": [{"postal_code": "01001001", "street_number": "231"}]}`
+
+`http://localhost:13001/stores/update/1`
+
+### Excluir uma loja
+
+curl -X DELETE
+
+`http://localhost:13001/stores/delete/1`
+
+## Possíveis problemas
+
+Durante o processo de configuração e utilização da biblioteca, esteja atento aos seguintes possíveis problemas:
+
+* Tentar utilizar o Composer sem ter o PHP instalado previamente.
+* Clonar o projeto sem ter instalado o GIT anteriormente.
+* Executar os comandos do Composer fora do diretório do projeto.
+
+**Observação: Todas as classes, inclusive os testes, possuem comentários que explicam sua funcionalidade.**
+
+Seguindo esses passos, você terá o código da biblioteca instalado corretamente, com suas dependências e testes executados de maneira apropriada.
+
+Se ocorrerem problemas durante o processo de configuração, verifique se todas as dependências foram instaladas corretamente e se todas as etapas foram seguidas adequadamente.
