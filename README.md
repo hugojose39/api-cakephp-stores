@@ -12,8 +12,10 @@ Baixe o código-fonte em um arquivo zip, ou, se você tiver o Git instalado, use
  * GIT
  * Docker
  * PHP unit
+ * [Republica Virtual Cep](http://cep.republicavirtual.com.br/web_cep.php?cep=01001000&formato=json)
+ * [Via Cep](https://viacep.com.br/)
   
-## Principais classes
+## Principais Arquivos
  * StoresController.php
  * StoresTable.php
  * Store.php
@@ -21,6 +23,7 @@ Baixe o código-fonte em um arquivo zip, ou, se você tiver o Git instalado, use
  * AddressesTable.php
  * Address.php
  * routes.php
+ * migrations
 
 ## Começando
 
@@ -46,9 +49,9 @@ $  composer --version
 Escolha uma das opções abaixo ou baixe o projeto em formato zip:
 
 ``` bash
-$    HTTPS - git clone https://github.com/hugojose39/omnipay-cielo-teste.git
-$    SSH - git clone git@github.com:hugojose39/omnipay-cielo-teste.git
-$    GitHub CLI - gh repo clone hugojose39/omnipay-cielo-teste
+$    HTTPS - git clone https://github.com/hugojose39/api-cakephp-stores.git
+$    SSH - git clone git@github.com:hugojose39/api-cakephp-stores.git
+$    GitHub CLI - gh repo clone hugojose39/api-cakephp-stores
 ```
 
 Quando o projeto estiver em seu computador, acesse sua pasta e execute os comandos no seu terminal:
