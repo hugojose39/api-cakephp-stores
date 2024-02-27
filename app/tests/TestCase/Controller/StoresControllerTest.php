@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Test\TestCase\Controller;
 
-use App\Controller\StoresController;
+use Cake\ORM\TableRegistry;
 use Cake\TestSuite\IntegrationTestTrait;
 use Cake\TestSuite\TestCase;
 
@@ -33,7 +33,8 @@ class StoresControllerTest extends TestCase
      */
     public function testIndex(): void
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $this->get('/stores/index');
+        $this->assertResponseOk();
     }
 
     /**
@@ -42,9 +43,10 @@ class StoresControllerTest extends TestCase
      * @return void
      * @uses \App\Controller\StoresController::view()
      */
-    public function testView(): void
+    public function testShow(): void
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $this->get('/stores/show/1');
+        $this->assertResponseOk();
     }
 
     /**
@@ -53,9 +55,21 @@ class StoresControllerTest extends TestCase
      * @return void
      * @uses \App\Controller\StoresController::add()
      */
-    public function testAdd(): void
+    public function testCreate(): void
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $data = [
+            'name' => 'Test Store',
+            'addresses' => [
+                [
+                    'postal_code' => '01001000',
+                    'street_number' => '123',
+                    'complement' => 'Test Complement'
+                ]
+            ]
+        ];
+
+        $this->post('/stores/create', $data);
+        $this->assertResponseSuccess();
     }
 
     /**
@@ -64,9 +78,14 @@ class StoresControllerTest extends TestCase
      * @return void
      * @uses \App\Controller\StoresController::edit()
      */
-    public function testEdit(): void
+    public function testUpdate(): void
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $data = [
+            'name' => 'Updated Store Name'
+        ];
+
+        $this->put('/stores/update/1', $data);
+        $this->assertResponseSuccess();
     }
 
     /**
@@ -77,6 +96,30 @@ class StoresControllerTest extends TestCase
      */
     public function testDelete(): void
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $this->delete('/stores/delete/1');
+        $this->assertResponseSuccess();
+        $this->assertResponseCode(204);
+    }
+
+    public function tearDown(): void
+    {
+        parent::tearDown();
+
+        // Limpar os dados do banco de dados após os testes
+        $this->clearDatabase();
+    }
+
+    /**
+     * Limpar os dados do banco de dados
+     *
+     * @return void
+     */
+    private function clearDatabase(): void
+    {
+        // Obtém uma instância do TableRegistry para a tabela de Stores
+        $storesTable = TableRegistry::getTableLocator()->get('Stores');
+
+        // Deleta todos os registros da tabela de Stores
+        $storesTable->deleteAll([]);
     }
 }
