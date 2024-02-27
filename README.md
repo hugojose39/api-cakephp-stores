@@ -161,6 +161,6 @@ Durante o processo de configuração e utilização da biblioteca, esteja atento
 
 **Observação: Todas as classes, inclusive os testes, possuem comentários que explicam sua funcionalidade.**
 
-Seguindo esses passos, você terá o código da biblioteca instalado corretamente, com suas dependências e testes executados de maneira apropriada.
+Seguindo esses passos, você terá o código da api instalado corretamente, com suas dependências e testes executados de maneira apropriada.
 
 Se ocorrerem problemas durante o processo de configuração, verifique se todas as dependências foram instaladas corretamente e se todas as etapas foram seguidas adequadamente.
