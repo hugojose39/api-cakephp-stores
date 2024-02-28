@@ -67,7 +67,7 @@ Quando o projeto estiver em seu computador, acesse sua pasta e execute os comand
 
     **O comando docker-compose run --user=root app bash permite acessar o contêiner do aplicativo Docker como usuário root.**
     ```bash
-    docker-compose run --user=root app bash
+    docker compose run --user=root app bash
     ```
 
 4. Na linha de comando da aplicação, instale as dependências da aplicação com o comando abaixo:
