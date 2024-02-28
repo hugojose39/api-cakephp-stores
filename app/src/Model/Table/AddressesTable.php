@@ -141,7 +141,7 @@ class AddressesTable extends Table
                 $entity = $this->preencherDadosEndereco($entity, $cepData);
 
                 // Aplicar a máscara de CEP ao campo postal_code e atribuir ao campo postal_code_masked
-                $entity->postal_code_masked = $this->aplicarMascaraCEP($entity->postal_code);
+                $entity->set('postal_code_masked', $this->aplicarMascaraCEP($entity->postal_code));
             } else {
                 // Se os dados não forem encontrados em nenhuma API, emita o erro
                 $entity->setError('postal_code', 'CEP não encontrado');

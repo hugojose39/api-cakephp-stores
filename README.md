@@ -78,34 +78,23 @@ Quando o projeto estiver em seu computador, acesse sua pasta e execute os comand
     composer install
     ```
 
-5. Para sair da linha de comando da aplicação, execute o comando abaixo:
+5. Ainda linha de comando da aplicação, execute as migrations da aplicação com o comando abaixo:
+
+    ```bash
+    bin/cake migrations migrate
+    ```
+
+6. Para sair da linha de comando da aplicação, execute o comando abaixo:
     ```bash
     exit
     ```
 
-6. Execute o comando abaixo para iniciar a aplicação:
+7. Execute o comando abaixo para iniciar a aplicação:
     ```bash
     docker compose up -d --remove-orphans
     ```
 
-7. Após iniciar a aplicação execute o comando:
-
-    **O comando docker compose exec --user=root app bash permite acessar o contêiner do aplicativo Docker como usuário root.**
-    ```bash
-    docker compose exec --user=root app bash
-    ```
-
-8. Dentro do container, execute as migrations da aplicação com o comando abaixo:
-   ```bash
-    bin/cake migrations migrate
-    ```
-
-9. Ainda dentro do container, execute o teste do StoresController com o comando abaixo:
-    ```bash
-    vendor/bin/phpunit tests/TestCase/Controller/StoresControllerTest.php
-    ```
-
-10. Execute o comando abaixo para parar a aplicação:
+8. Execute o comando abaixo para parar a aplicação:
     ```bash
     docker compose down
     ```
@@ -166,6 +155,22 @@ curl -X PUT
 curl -X DELETE
 
 `http://localhost:13001/stores/delete/1`
+
+## Testes
+
+É fundamental que os testes sejam a última ação a ser realizada, pois eles compartilham o mesmo banco de dados do projeto. Por questões de boa prática, uma vez que todos os testes tenham sido executados, todos os dados do banco são apagados.
+
+1. Com a aplicação iniciada execute o comando:
+
+    **O comando docker compose exec --user=root app bash permite acessar o contêiner do aplicativo Docker como usuário root.**
+    ```bash
+    docker compose exec --user=root app bash
+    ```
+
+2. Ainda dentro do container, execute o teste do StoresController com o comando abaixo:
+    ```bash
+    vendor/bin/phpunit tests/TestCase/Controller/StoresControllerTest.php
+    ```
 
 ## Possíveis problemas
 
