@@ -78,27 +78,34 @@ Quando o projeto estiver em seu computador, acesse sua pasta e execute os comand
     composer install
     ```
 
-5. Na linha de comando da aplicação, execute as migrations da aplicação com o comando abaixo:
-   ```bash
-    bin/cake migrations migrate
-    ```
-
-6. Ainda na linha de comando da aplicação, execute o teste do StoresController com o comando abaixo:
-    ```bash
-    vendor/bin/phpunit tests/TestCase/Controller/StoresControllerTest.php
-    ```
-
-7. Para sair da linha de comando da aplicação, execute o comando abaixo:
+5. Para sair da linha de comando da aplicação, execute o comando abaixo:
     ```bash
     exit
     ```
 
-8. Execute o comando abaixo para iniciar a aplicação:
+6. Execute o comando abaixo para iniciar a aplicação:
     ```bash
     docker compose up -d --remove-orphans
     ```
 
-9.  Execute o comando abaixo para parar a aplicação:
+7. Após iniciar a aplicação execute o comando:
+
+    **O comando docker compose exec --user=root app bash permite acessar o contêiner do aplicativo Docker como usuário root.**
+    ```bash
+    docker compose exec --user=root app bash
+    ```
+
+8. Dentro do container, execute as migrations da aplicação com o comando abaixo:
+   ```bash
+    bin/cake migrations migrate
+    ```
+
+9. Ainda dentro do container, execute o teste do StoresController com o comando abaixo:
+    ```bash
+    vendor/bin/phpunit tests/TestCase/Controller/StoresControllerTest.php
+    ```
+
+10. Execute o comando abaixo para parar a aplicação:
     ```bash
     docker compose down
     ```
