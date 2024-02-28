@@ -116,10 +116,12 @@ class StoresControllerTest extends TestCase
      */
     private function clearDatabase(): void
     {
-        // Obtém uma instância do TableRegistry para a tabela de Stores
+        // Obtém uma instância do TableRegistry para a tabela de Stores e Addresses
         $storesTable = TableRegistry::getTableLocator()->get('Stores');
+        $addressesTable = TableRegistry::getTableLocator()->get('Addresses');
 
-        // Deleta todos os registros da tabela de Stores
+        // Deleta todos os registros da tabela de Stores e Addresses;
         $storesTable->deleteAll([]);
+        $addressesTable->deleteAll([]);
     }
 }
