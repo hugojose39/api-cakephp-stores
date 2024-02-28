@@ -63,38 +63,39 @@ Quando o projeto estiver em seu computador, acesse sua pasta e execute os comand
     docker compose build --force-rm
     ```
 
-3. Execute o comando abaixo para iniciar a aplicação:
+3. Para acessar a linha de comando da aplicação, execute o comando abaixo:
+    **O comando docker-compose run --user=root app bash permite acessar o contêiner do aplicativo Docker como usuário root.**
     ```bash
-    docker compose up -d --remove-orphans
+    docker-compose run --user=root app bash
     ```
 
-4. Para acessar a linha de comando da aplicação, execute o comando abaixo:
-    **O comando docker compose exec --user=root app bash permite acessar o contêiner do aplicativo Docker como usuário root.**
-    ```bash
-    docker compose exec --user=root app bash
-    ```
-
-5. Na linha de comando da aplicação, instale as dependências da aplicação com o comando abaixo:
+4. Na linha de comando da aplicação, instale as dependências da aplicação com o comando abaixo:
+   - Nesta parte será necessário que você dê permissões de gravação temporária, basta selecionar a opção **Y**.
     ```bash
     composer install
     ```
 
-6. Na linha de comando da aplicação, execute as migrations da aplicação com o comando abaixo:
+5. Na linha de comando da aplicação, execute as migrations da aplicação com o comando abaixo:
    ```bash
     bin/cake migrations migrate
     ```
 
-7. Ainda na linha de comando da aplicação, execute o teste do StoresController com o comando abaixo:
+6. Ainda na linha de comando da aplicação, execute o teste do StoresController com o comando abaixo:
     ```bash
     vendor/bin/phpunit tests/TestCase/Controller/StoresControllerTest.php
     ```
 
-8. Para sair da linha de comando da aplicação, execute o comando abaixo:
+7. Para sair da linha de comando da aplicação, execute o comando abaixo:
     ```bash
     exit
     ```
 
-9. Execute o comando abaixo para parar a aplicação:
+8. Execute o comando abaixo para iniciar a aplicação:
+    ```bash
+    docker compose up -d --remove-orphans
+    ```
+
+9.  Execute o comando abaixo para parar a aplicação:
     ```bash
     docker compose down
     ```
