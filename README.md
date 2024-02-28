@@ -60,7 +60,7 @@ Quando o projeto estiver em seu computador, acesse sua pasta e execute os comand
    
 2. Construa a imagem do Docker com o comando abaixo:
     ```bash
-    docker-compose build --force-rm
+    docker compose build --force-rm
     ```
 
 3. Para acessar a linha de comando da aplicação, execute o comando abaixo:
@@ -86,12 +86,12 @@ Quando o projeto estiver em seu computador, acesse sua pasta e execute os comand
 
 7. Execute o comando abaixo para iniciar a aplicação:
     ```bash
-    docker-compose up -d --remove-orphans
+    docker compose up -d --remove-orphans
     ```
 
 8. Execute o comando abaixo para parar a aplicação:
     ```bash
-    docker-compose down
+    docker compose down
     ```
 
 ## Uso 
