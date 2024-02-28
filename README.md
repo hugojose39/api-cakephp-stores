@@ -71,7 +71,9 @@ Quando o projeto estiver em seu computador, acesse sua pasta e execute os comand
     ```
 
 4. Na linha de comando da aplicação, instale as dependências da aplicação com o comando abaixo:
+
    - Nesta parte será necessário que você dê permissões de gravação temporária, basta selecionar a opção **Y**.
+
     ```bash
     composer install
     ```
