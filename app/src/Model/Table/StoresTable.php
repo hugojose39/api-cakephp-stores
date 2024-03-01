@@ -69,6 +69,8 @@ class StoresTable extends Table
             ->requirePresence('name', 'create', 'O nome é obrigatório.')
             ->notEmptyString('name', 'Por favor, preencha o nome.');
 
+        $validator->requirePresence('addresses', 'Por favor, informe o endereço');
+
         return $validator;
     }
 

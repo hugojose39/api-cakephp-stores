@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace App\Model\Table;
 
 use App\Model\Entity\Address;
+use App\Repositories\RepublicaVirtual;
+use App\Repositories\ViaCep;
 use Cake\Event\EventInterface;
-use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
@@ -128,18 +129,18 @@ class AddressesTable extends Table
     public function beforeSave(EventInterface $event, Address $entity, mixed $options)
     {
         if ($entity->isDirty('postal_code')) {
+            $republicaVirtual = new RepublicaVirtual();
+            $viaCep = new ViaCep();
+            $cep = $entity->postal_code;
             // Consulta à primeira API de CEP
-            $cepData = $this->consultarCep($entity->postal_code);
+            $cepData = $republicaVirtual->cep($cep, $entity);
 
             if (!$cepData) {
-                // Consulta à segunda API de CEP
-                $cepData = $this->consultarOutroCep($entity->postal_code);
+                // Consulta à cons$consultarCepgunda API de CEP
+                $cepData = $viaCep->cep($cep, $entity);
             }
 
             if ($cepData) {
-                // Preencher os dados do endereço com base nos dados do CEP
-                $entity = $this->preencherDadosEndereco($entity, $cepData);
-
                 // Aplicar a máscara de CEP ao campo postal_code e atribuir ao campo postal_code_masked
                 $entity->set('postal_code_masked', $this->aplicarMascaraCEP($entity->postal_code));
             } else {
@@ -155,64 +156,5 @@ class AddressesTable extends Table
         $maskedCEP = substr($cep, 0, 5) . '-' . substr($cep, 5);
 
         return $maskedCEP;
-    }
-
-    // Método para consultar a primeira API de CEP
-    private function consultarCep(string $cep): array|bool
-    {
-        // Monta a URL para consulta do CEP no Republica Virtual
-
-        $url = "http://cep.republicavirtual.com.br/web_cep.php?cep={$cep}&formato=json";
-
-        // Realiza a requisição HTTP para obter os dados do CEP
-        $jsonResponse = @file_get_contents($url);
-
-        // Verifica se a requisição foi bem-sucedida e se há dados retornados
-        if ($jsonResponse !== false) {
-            // Decodifica os dados JSON em um array associativo
-            $cepData = json_decode($jsonResponse, true);
-
-            // Verifica se os dados retornados contêm informações válidas
-            if (is_array($cepData) && !isset($cepData['debug'])) {
-                return $cepData; // Retorna os dados do CEP
-            }
-        }
-
-        // Retorna falso se a requisição falhou ou se os dados do CEP não forem válidos
-        return false;
-    }
-
-    // Método para consultar a segunda API de CEP
-    private function consultarOutroCep(string $cep): array|bool
-    {
-        // Monta a URL para consulta do CEP no Via Cep
-
-        $url = "https://viacep.com.br/ws/{$cep}/json/";
-
-        // Realiza a requisição HTTP para obter os dados do CEP
-        $jsonResponse = @file_get_contents($url);
-        // Verifica se a requisição foi bem-sucedida e se há dados retornados
-        if ($jsonResponse !== false) {
-            // Decodifica os dados JSON em um array associativo
-            $cepData = json_decode($jsonResponse, true);
-            // Verifica se os dados retornados contêm informações válidas
-            if (is_array($cepData) && !isset($cepData['erro'])) {
-                return $cepData; // Retorna os dados do CEP
-            }
-        }
-        // Retorna falso se a requisição falhou ou se os dados do CEP não forem válidos
-        return false;
-    }
-
-    // Método para preencher os dados do endereço com base nos dados do CEP
-    private function preencherDadosEndereco(Address $entity, array $cepData)
-    {
-        $entity->city = $cepData['cidade'] ?? $cepData['localidade'];
-        $entity->state = $cepData['uf'];
-        $entity->sublocality = $cepData['bairro'];
-        $entity->street = $cepData['logradouro'];
-        $entity->complement = $cepData['tipo_logradouro'] ?? $cepData['complemento'];
-
-        return $entity;
     }
 }
